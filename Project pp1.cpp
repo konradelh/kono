@@ -189,13 +189,15 @@ void mozliwe_ruchy()
         }
         cout << endl;
     }
+
+    if (mozliwe[0][0] == '-')
+        cout << "WYGRALES!!";
 }
 
 int main()
 {
     char ruch[8];
     int loop_counter = 0;
-    int ile_bialych = PLANSZA_SIZE;
 
     wypisz();
 
@@ -216,7 +218,6 @@ int main()
             {
                 plansza[a][b] = ' ';
                 plansza[e][f] = 'c';
-                ile_bialych -= 1;
                 wypisz();
             }
             else
@@ -247,8 +248,6 @@ int main()
         
         mozliwe_ruchy();
 
-        if (ile_bialych == 0)
-            cout << "Wygrales!\n";
         ++loop_counter;
     }
 }

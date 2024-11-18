@@ -70,11 +70,11 @@ void bicie_biale(bool &a)
     }
 }
 
-bool czy_mozliwe(int a, int b, char e, int c, int d, char f)
+bool czy_mozliwe(int a, int b, char e, int c, int d)
 {
     if (
         e == '-' && 
-        plansza[a][b] == f && plansza[c][d] == ' ' &&
+        plansza[a][b] == 'c' && plansza[c][d] == ' ' &&
         ((abs(c - a) == 1 && d == b) || (c == a && abs(d - b) == 1)) && 
         a >= 0 && b >= 0 && c >= 0 && d >= 0
         )
@@ -91,15 +91,15 @@ bool czy_bicie(char a)
         return false;
 }
 
-bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g, char h, char k)
+bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g)
 {
     if (
         e == '-' &&
-        plansza[a][b] == h && plansza[c][d] == ' ' && plansza[f][g] == k &&
+        plansza[a][b] == 'c' && plansza[c][d] == ' ' && plansza[f][g] == 'b' &&
         (
-          (abs(c - a) == 2 && d == b && abs(f - a) == 3 && g == b && plansza[(a + c) / 2][b] == h)
+          (abs(c - a) == 2 && d == b && abs(f - a) == 3 && g == b && plansza[(a + c) / 2][b] == 'c')
           ||
-          (c == a && abs(d - b) == 2 && abs(g - b) == 3 && f == a && plansza[a][(b + d) / 2] == h)
+          (c == a && abs(d - b) == 2 && abs(g - b) == 3 && f == a && plansza[a][(b + d) / 2] == 'c')
         ) &&
         a >= 0 && b >= 0 && c >= 0 && d >= 0 && f >= 0 && g >= 0
         )
@@ -212,7 +212,7 @@ int main()
 
         if (czy_bicie(ruch[5]))
         {
-            if (czy_mozliwe_bicie(a, b, ruch[2], c, d, e, f, 'c', 'b'))
+            if (czy_mozliwe_bicie(a, b, ruch[2], c, d, e, f))
             {
                 plansza[a][b] = ' ';
                 plansza[e][f] = 'c';
@@ -228,7 +228,7 @@ int main()
         }
         else
         {
-            if (czy_mozliwe(a, b, ruch[2], c, d, 'c'))
+            if (czy_mozliwe(a, b, ruch[2], c, d))
             {
                 swap(plansza[a][b], plansza[c][d]);
                 wypisz();

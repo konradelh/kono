@@ -206,7 +206,7 @@ int main()
         int f = int(ruch[16]) - 65;
 
         /*
-            To jest komentarz
+            To jest komentarz, ktory zmienilem.
         */
         if (czy_bicie(ruch[5]))
         {

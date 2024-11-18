@@ -203,7 +203,7 @@ int main()
     {
         cin >> ruch;
 
-        int f = int(ruch[6]) - 65;
+        int f = int(ruch[16]) - 65;
 
         /*
             To jest komentarz

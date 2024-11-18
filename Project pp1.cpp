@@ -203,13 +203,11 @@ int main()
     {
         cin >> ruch;
 
-        int a = PLANSZA_SIZE - (ruch[1] - '0');
-        int b = int(ruch[0]) - 65;
-        int c = PLANSZA_SIZE - (ruch[4] - '0');
-        int d = int(ruch[3]) - 65;
-        int e = PLANSZA_SIZE - (ruch[7] - '0');
         int f = int(ruch[6]) - 65;
 
+        /*
+            To jest komentarz
+        */
         if (czy_bicie(ruch[5]))
         {
             if (czy_mozliwe_bicie(a, b, ruch[2], c, d, e, f, 'c', 'b'))

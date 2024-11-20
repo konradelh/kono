@@ -5,6 +5,7 @@
 using namespace std;
 
 const int PLANSZA_SIZE = 4;
+// wypelnienie planszy poczatkowa pozycja
 char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
                                              {'c','c','c','c'},
                                              {' ',' ',' ',' '},
@@ -12,6 +13,7 @@ char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
                                              {'b','b','b','b'}
                                            };
 
+// wypisanie pol planszy i jej obramowki
 void wypisz()
 {
     system("cls");
@@ -27,6 +29,7 @@ void wypisz()
     cout << "   A  B  C  D " << endl;
 }
 
+// zamiana dwoch zmiennych (pol planszy, zeby wykonac ruch)
 void swap(char &a, char &b)
 {
     char temp;
@@ -35,6 +38,7 @@ void swap(char &a, char &b)
     b = temp;
 }
 
+// silnik wykonuje bicie, jezeli to mozliwe 
 void bicie_biale(bool &a)
 {
     for (int i = 0; i < PLANSZA_SIZE; ++i)
@@ -70,6 +74,9 @@ void bicie_biale(bool &a)
     }
 }
 
+/* sprawdzenie, czy ruch(niebedacy biciem) jest poprawny
+a, b, c, d to wspolrzedne pol podanych przez gracza
+e tylko do sprawdzenia, czy gracz napisal myslnik miedzy pierwszymi dwoma polami */
 bool czy_mozliwe(int a, int b, char e, int c, int d)
 {
     if (
@@ -83,6 +90,7 @@ bool czy_mozliwe(int a, int b, char e, int c, int d)
         return false;
 }
 
+// sprawdzenie, czy wpisany przez gracza ruch jest biciem
 bool czy_bicie(char a)
 {
     if (a == ':')
@@ -91,6 +99,9 @@ bool czy_bicie(char a)
         return false;
 }
 
+/* sprawdzenie, czy bicie jest poprawne
+a, b, c, d, f, g to wspolrzedne pol podanych przez gracza
+e tylko do sprawdzenia, czy gracz napisal myslnik miedzy pierwszymi dwoma polami */
 bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g)
 {
     if (
@@ -108,16 +119,35 @@ bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g)
         return false;
 }
 
-void mozliwe_ruchy()
+// wykonanie ruchu bialych (niebedacego biciem) i sprawdzenie czy ktos wygral
+void ruch_bialych()
 {
     char mozliwe[PLANSZA_SIZE * 4][5];
+    bool gdzie_bija_czarne[PLANSZA_SIZE][PLANSZA_SIZE] = {};
 
+    // wypelnienie gdzie_bija_czarne[]
+    for (int i = 0; i < PLANSZA_SIZE; ++i)
+    {
+        for (int j = 0; j < PLANSZA_SIZE; ++j)
+        {
+            if ((i == 0 && plansza[2][j] == 'c' && plansza[3][j] == 'c' && plansza[1][j] == ' ') ||
+                (i == (PLANSZA_SIZE - 1) && plansza[i - 2][j] == 'c' && plansza[i - 3][j] == 'c' && plansza[i - 1][j] == ' ') ||
+                (j == 0 && plansza[i][2] == 'c' && plansza[i][3] == 'c' && plansza[i][1] == ' ') ||
+                (j == (PLANSZA_SIZE - 1) && plansza[i][j - 2] == 'c' && plansza[i][j - 3] == 'c' && plansza[i][j - 1] == ' '))
+                gdzie_bija_czarne[i][j] = 1;
+            cout << gdzie_bija_czarne[i][j];
+        }
+        cout << endl;
+    }
+
+    // wypelnienie mozliwe[] samymi myslnikami
     for (int i = 0; i < PLANSZA_SIZE * 4; ++i)
     {
         for (int j = 0; j < 5; ++j)
             mozliwe[i][j] = '-';
     }
 
+    // znalezienie mozliwych ruchow i wpisanie ich do mozliwe[]
     for (int i = 0; i < PLANSZA_SIZE; ++i)
     {
         for (int j = 0; j < PLANSZA_SIZE; ++j)
@@ -181,6 +211,7 @@ void mozliwe_ruchy()
         }
     }
 
+    // wypisanie mozliwe[] dla testow
     for (int i = 0; i < PLANSZA_SIZE * 4; ++i)
     {
         for (int j = 0; j < 5; ++j)
@@ -190,6 +221,7 @@ void mozliwe_ruchy()
         cout << endl;
     }
 
+    // warunek wygranej
     if (mozliwe[0][0] == '-')
         cout << "WYGRALES!!";
 }
@@ -205,6 +237,7 @@ int main()
     {
         cin >> ruch;
 
+        // zamiana charow podanych przez gracza na wspolrzedne pol
         int a = PLANSZA_SIZE - (ruch[1] - '0');
         int b = int(ruch[0]) - 65;
         int c = PLANSZA_SIZE - (ruch[4] - '0');
@@ -242,12 +275,14 @@ int main()
             }
         }
 
+        // silnik
         bool czy_wykonany_ruch = false;
 
         bicie_biale(czy_wykonany_ruch);
         
-        mozliwe_ruchy();
+        ruch_bialych();
 
         ++loop_counter;
     }
+    return 0;
 }

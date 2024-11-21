@@ -48,12 +48,14 @@ void bicie_biale(bool &a)
             plansza[i][0] = ' ';
             plansza[i][3] = 'b';
             a = true;
+            wypisz();
         }
         else if (a == false && plansza[i][3] == 'b' && plansza[i][2] == 'b' && plansza[i][1] == ' ' && plansza[i][0] == 'c')
         {
             plansza[i][3] = ' ';
             plansza[i][0] = 'b';
             a = true;
+            wypisz();
         }
 
     }
@@ -64,12 +66,14 @@ void bicie_biale(bool &a)
             plansza[0][j] = ' ';
             plansza[3][j] = 'b';
             a = true;
+            wypisz();
         }
         else if (a == false && plansza[3][j] == 'b' && plansza[2][j] == 'b' && plansza[1][j] == ' ' && plansza[0][j] == 'c')
         {
             plansza[3][j] = ' ';
             plansza[0][j] = 'b';
             a = true;
+            wypisz();
         }
     }
 }
@@ -120,12 +124,13 @@ bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g)
 }
 
 // wykonanie ruchu bialych (niebedacego biciem) i sprawdzenie czy ktos wygral
-void ruch_bialych()
+void ruch_bialych(bool &czy_wykonany_ruch)
 {
     char mozliwe[PLANSZA_SIZE * 4][5];
-    bool gdzie_bija_czarne[PLANSZA_SIZE][PLANSZA_SIZE] = {};
+    bool gdzie_bija_czarne[PLANSZA_SIZE][PLANSZA_SIZE] = {}; //tabela z polami, ktore moga zbic czarne
+    bool gdzie_mozliwe_bicia[PLANSZA_SIZE][PLANSZA_SIZE] = {}; //tabela z polami, na ktore trzeba pojsc, aby przygotowac bicie
 
-    // wypelnienie gdzie_bija_czarne[]
+    // wypelnienie gdzie_bija_czarne[][] i gdzie_mozliwe_bicia[][]
     for (int i = 0; i < PLANSZA_SIZE; ++i)
     {
         for (int j = 0; j < PLANSZA_SIZE; ++j)
@@ -135,19 +140,22 @@ void ruch_bialych()
                 (j == 0 && plansza[i][2] == 'c' && plansza[i][3] == 'c' && plansza[i][1] == ' ') ||
                 (j == (PLANSZA_SIZE - 1) && plansza[i][j - 2] == 'c' && plansza[i][j - 3] == 'c' && plansza[i][j - 1] == ' '))
                 gdzie_bija_czarne[i][j] = 1;
-            cout << gdzie_bija_czarne[i][j];
+            if ((i == 0 && plansza[1][j] == 'b' && plansza[2][j] == ' ' && plansza[3][j] == 'c') ||
+                (i == (PLANSZA_SIZE - 1) && plansza[i - 1][j] == 'b' && plansza[i - 2][j] == ' ' && plansza[i - 3][j] == 'c') ||
+                (j == 0 && plansza[i][1] == 'b' && plansza[i][2] == ' ' && plansza[i][3] == 'c') ||
+                (j == (PLANSZA_SIZE - 1) && plansza[i][j - 1] == 'b' && plansza[i][j - 2] == ' ' && plansza[i][j - 3] == 'c'))
+                gdzie_mozliwe_bicia[i][j] = 1;
         }
-        cout << endl;
     }
 
-    // wypelnienie mozliwe[] samymi myslnikami
+    // wypelnienie mozliwe[][] samymi myslnikami
     for (int i = 0; i < PLANSZA_SIZE * 4; ++i)
     {
         for (int j = 0; j < 5; ++j)
             mozliwe[i][j] = '-';
     }
 
-    // znalezienie mozliwych ruchow i wpisanie ich do mozliwe[]
+    // znalezienie mozliwych ruchow i wpisanie ich do mozliwe[][]
     for (int i = 0; i < PLANSZA_SIZE; ++i)
     {
         for (int j = 0; j < PLANSZA_SIZE; ++j)
@@ -211,7 +219,99 @@ void ruch_bialych()
         }
     }
 
-    // wypisanie mozliwe[] dla testow
+    for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
+    {
+        if (czy_wykonany_ruch == true)
+            break;
+        else if (mozliwe[k][0] != '-')
+        {
+            int a = PLANSZA_SIZE - (mozliwe[k][1] - '0');
+            int b = int(mozliwe[k][0]) - 65;
+            int c = PLANSZA_SIZE - (mozliwe[k][4] - '0');
+            int d = int(mozliwe[k][3]) - 65;
+
+            if (gdzie_bija_czarne[a][b] == 1 && gdzie_bija_czarne[c][d] != 1 && gdzie_mozliwe_bicia[c][d] == 1)
+            {
+                swap(plansza[a][b], plansza[c][d]);
+                czy_wykonany_ruch = true;
+                wypisz();
+            }
+        }
+    }
+    for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
+    {
+        if (czy_wykonany_ruch == true)
+            break;
+        else if (mozliwe[k][0] != '-')
+        {
+            int a = PLANSZA_SIZE - (mozliwe[k][1] - '0');
+            int b = int(mozliwe[k][0]) - 65;
+            int c = PLANSZA_SIZE - (mozliwe[k][4] - '0');
+            int d = int(mozliwe[k][3]) - 65;
+
+            if (gdzie_bija_czarne[a][b] == 1 && gdzie_bija_czarne[c][d] != 1)
+            {
+                swap(plansza[a][b], plansza[c][d]);
+                czy_wykonany_ruch = true;
+                wypisz();
+            }
+        }
+    }
+    for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
+    {
+        if (czy_wykonany_ruch == true)
+            break;
+        else if (mozliwe[k][0] != '-')
+        {
+            int a = PLANSZA_SIZE - (mozliwe[k][1] - '0');
+            int b = int(mozliwe[k][0]) - 65;
+            int c = PLANSZA_SIZE - (mozliwe[k][4] - '0');
+            int d = int(mozliwe[k][3]) - 65;
+
+            if (gdzie_bija_czarne[a][b] != 1 && gdzie_bija_czarne[c][d] != 1 && gdzie_mozliwe_bicia[c][d] == 1)
+            {
+                swap(plansza[a][b], plansza[c][d]);
+                czy_wykonany_ruch = true;
+                wypisz();
+            }
+        }
+    }
+    for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
+    {
+        if (czy_wykonany_ruch == true)
+            break;
+        else if (mozliwe[k][0] != '-')
+        {
+            int a = PLANSZA_SIZE - (mozliwe[k][1] - '0');
+            int b = int(mozliwe[k][0]) - 65;
+            int c = PLANSZA_SIZE - (mozliwe[k][4] - '0');
+            int d = int(mozliwe[k][3]) - 65;
+
+            if (gdzie_bija_czarne[a][b] != 1 && gdzie_bija_czarne[c][d] != 1)
+            {
+                swap(plansza[a][b], plansza[c][d]);
+                czy_wykonany_ruch = true;
+                wypisz();
+            }
+        }
+    }
+    for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
+    {
+        if (czy_wykonany_ruch == true)
+            break;
+        else if (mozliwe[k][0] != '-')
+        {
+            int a = PLANSZA_SIZE - (mozliwe[k][1] - '0');
+            int b = int(mozliwe[k][0]) - 65;
+            int c = PLANSZA_SIZE - (mozliwe[k][4] - '0');
+            int d = int(mozliwe[k][3]) - 65;
+            swap(plansza[a][b], plansza[c][d]);
+            czy_wykonany_ruch = true;
+            wypisz();
+        }
+    }
+
+    // wypisanie mozliwe[][] dla testow
     for (int i = 0; i < PLANSZA_SIZE * 4; ++i)
     {
         for (int j = 0; j < 5; ++j)
@@ -220,6 +320,7 @@ void ruch_bialych()
         }
         cout << endl;
     }
+
 
     // warunek wygranej
     if (mozliwe[0][0] == '-')
@@ -280,7 +381,7 @@ int main()
 
         bicie_biale(czy_wykonany_ruch);
         
-        ruch_bialych();
+        ruch_bialych(czy_wykonany_ruch);
 
         ++loop_counter;
     }

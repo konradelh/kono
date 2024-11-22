@@ -1,10 +1,12 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
 const int PLANSZA_SIZE = 4;
+char _imie_gracza[15] = {};
 // wypelnienie planszy poczatkowa pozycja
 char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
                                              {'c','c','c','c'},
@@ -17,6 +19,7 @@ char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
 void wypisz()
 {
     system("cls");
+    cout << "czarne: " << _imie_gracza << endl;
     for (int wiersze = 0; wiersze < PLANSZA_SIZE; ++wiersze)
     {
         cout << PLANSZA_SIZE - wiersze;
@@ -87,7 +90,8 @@ bool czy_mozliwe(int a, int b, char e, int c, int d)
         e == '-' && 
         plansza[a][b] == 'c' && plansza[c][d] == ' ' &&
         ((abs(c - a) == 1 && d == b) || (c == a && abs(d - b) == 1)) && 
-        a >= 0 && b >= 0 && c >= 0 && d >= 0
+        a >= 0 && b >= 0 && c >= 0 && d >= 0 &&
+        a <= 3 && b <= 3 && c <= 3 && d <= 3
         )
         return true;
     else
@@ -103,9 +107,11 @@ bool czy_bicie(char a)
         return false;
 }
 
-/* sprawdzenie, czy bicie jest poprawne
+/*
+sprawdzenie, czy bicie jest poprawne
 a, b, c, d, f, g to wspolrzedne pol podanych przez gracza
-e tylko do sprawdzenia, czy gracz napisal myslnik miedzy pierwszymi dwoma polami */
+e tylko do sprawdzenia, czy gracz napisal myslnik miedzy pierwszymi dwoma polami
+*/
 bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g)
 {
     if (
@@ -124,7 +130,7 @@ bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g)
 }
 
 // wykonanie ruchu bialych (niebedacego biciem) i sprawdzenie czy ktos wygral
-void ruch_bialych(bool &czy_wykonany_ruch)
+void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
 {
     char mozliwe[PLANSZA_SIZE * 4][5];
     bool gdzie_bija_czarne[PLANSZA_SIZE][PLANSZA_SIZE] = {}; //tabela z polami, ktore moga zbic czarne
@@ -219,6 +225,14 @@ void ruch_bialych(bool &czy_wykonany_ruch)
         }
     }
 
+    
+    /* wykonanie ruchu bialych przez komputer proretytezujac najlepsze ruchy wedlug kryteriow
+      -czy ruch uniemozliwia strate pionka
+      -czy ruch nie podstawia pionka
+      -czy ruch przygotowywuje bicie w nastepnej turz
+    */
+    
+    // gdy jest mozliwy ruch wychodzacy spod bicia, nie podchodzacy pod bicie i przygotowywujacy bicie w nastepnej turze
     for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
     {
         if (czy_wykonany_ruch == true)
@@ -238,6 +252,8 @@ void ruch_bialych(bool &czy_wykonany_ruch)
             }
         }
     }
+
+    // gdy jest mozliwy ruch wychodzacy spod bicia, nie podchodzacy pod bicie, ale tez nie przygotowywujacy bicie bialego
     for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
     {
         if (czy_wykonany_ruch == true)
@@ -257,6 +273,8 @@ void ruch_bialych(bool &czy_wykonany_ruch)
             }
         }
     }
+
+    // gdy jest mozliwy ruch nie wychodzacy spod bicia, nie podchodzacy pod bicie i przygotowywujacy bicie bialego
     for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
     {
         if (czy_wykonany_ruch == true)
@@ -276,7 +294,10 @@ void ruch_bialych(bool &czy_wykonany_ruch)
             }
         }
     }
-    for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
+
+    // gdy jest mozliwy ruch nie wychodzacy spod bicia, nie podchodzacy pod bicie, ale tez nie przygotowywujacy bicie bialego
+    srand(time(NULL));
+    for (int k = rand() % (PLANSZA_SIZE * 4); k < PLANSZA_SIZE * 4; k = rand() % (PLANSZA_SIZE * 4))
     {
         if (czy_wykonany_ruch == true)
             break;
@@ -295,6 +316,8 @@ void ruch_bialych(bool &czy_wykonany_ruch)
             }
         }
     }
+
+    // jezeli zadna inna opcja nie jest mozliwa losowy ruch
     for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
     {
         if (czy_wykonany_ruch == true)
@@ -311,7 +334,8 @@ void ruch_bialych(bool &czy_wykonany_ruch)
         }
     }
 
-    // wypisanie mozliwe[][] dla testow
+    /* wypisanie mozliwe[][] dla testow
+    
     for (int i = 0; i < PLANSZA_SIZE * 4; ++i)
     {
         for (int j = 0; j < 5; ++j)
@@ -320,18 +344,19 @@ void ruch_bialych(bool &czy_wykonany_ruch)
         }
         cout << endl;
     }
-
+    */
 
     // warunek wygranej
     if (mozliwe[0][0] == '-')
-        cout << "WYGRALES!!";
+        czy_koniec = true;
 }
 
 int main()
 {
-    char ruch[8];
-    int loop_counter = 0;
-
+    bool czy_koniec = false;
+    char ruch[9];
+    cout << "Podaj swoje imie: ";
+    cin >> _imie_gracza;
     wypisz();
 
     while (true)
@@ -381,9 +406,33 @@ int main()
 
         bicie_biale(czy_wykonany_ruch);
         
-        ruch_bialych(czy_wykonany_ruch);
+        ruch_bialych(czy_wykonany_ruch, czy_koniec);
 
-        ++loop_counter;
+        //warunek przegranej
+        int ile_bialych = 0;
+        int ile_bialych_nie_moze_sie_ruszyc = 0;
+        for (int i = 0; i < PLANSZA_SIZE; ++i)
+        {
+            for (int j = 0; j < PLANSZA_SIZE; ++j)
+            {
+                if (plansza[i][j] == 'c')
+                    ++ile_bialych;
+                if (plansza[i][j] == 'c' && plansza[i + 1][j] != ' ' && plansza[i - 1][j] != ' ' && plansza[i][j + 1] != ' ' && plansza[i][j - 1] != ' ')
+                    ++ile_bialych_nie_moze_sie_ruszyc;
+            }
+        }
+        if (ile_bialych_nie_moze_sie_ruszyc == ile_bialych || ile_bialych == 0)
+        {
+            cout << "Przegrales :(" << endl;
+            break;
+        }
+
+        //warunek wygranej
+        if (czy_koniec == true)
+        {
+            cout << "WYGRALES!!!" << endl;
+            break;
+        }
     }
     return 0;
 }

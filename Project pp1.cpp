@@ -417,7 +417,11 @@ int main()
             {
                 if (plansza[i][j] == 'c')
                     ++ile_bialych;
-                if (plansza[i][j] == 'c' && plansza[i + 1][j] != ' ' && plansza[i - 1][j] != ' ' && plansza[i][j + 1] != ' ' && plansza[i][j - 1] != ' ')
+                if (plansza[i][j] == 'c' && 
+                    (plansza[i + 1][j] != ' ' || i + 1 >= PLANSZA_SIZE) &&
+                    (plansza[i - 1][j] != ' ' || i - 1 < 0) && 
+                    (plansza[i][j + 1] != ' ' || j + 1 >= PLANSZA_SIZE) && 
+                    (plansza[i][j - 1] != ' ' || j - 1 < 0))
                     ++ile_bialych_nie_moze_sie_ruszyc;
             }
         }

@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -6,7 +6,7 @@
 using namespace std;
 
 const int PLANSZA_SIZE = 4;
-char _imie_gracza[15] = {};
+char IMIE_GRACZA[15] = {};
 // wypelnienie planszy poczatkowa pozycja
 char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
                                              {'c','c','c','c'},
@@ -19,17 +19,35 @@ char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
 void wypisz()
 {
     system("cls");
-    cout << "czarne: " << _imie_gracza << endl;
+    cout << "czarne: " << IMIE_GRACZA << endl;
+    cout << "  " << char(201) << char(205) << char(205) << char(205);
+    for (int i = 0; i < PLANSZA_SIZE - 1; ++i)
+        cout << char(203) << char(205) << char(205) << char(205);
+    cout << char(187) << endl;
     for (int wiersze = 0; wiersze < PLANSZA_SIZE; ++wiersze)
     {
-        cout << PLANSZA_SIZE - wiersze;
+        cout << PLANSZA_SIZE - wiersze << ' ';
         for (int kolumny = 0; kolumny < PLANSZA_SIZE; ++kolumny)
         {
-            cout << " |" << plansza[wiersze][kolumny];
+            cout << char(186) << ' ' << plansza[wiersze][kolumny] << ' ';
         }
-        cout << " |" << endl;
+        if (wiersze != 3)
+        {
+            cout << char(186) << endl;
+            cout << "  " << char(204) << char(205) << char(205) << char(205);
+            for (int i = 0; i < PLANSZA_SIZE - 1; ++i)
+                cout << char(206) << char(205) << char(205) << char(205);
+            cout << char(185);
+        }
+        else
+            cout << char(186);
+         cout << endl;
     }
-    cout << "   A  B  C  D " << endl;
+    cout << "  " << char(200) << char(205) << char(205) << char(205);
+    for (int i = 0; i < PLANSZA_SIZE - 1; ++i)
+        cout << char(202) << char(205) << char(205) << char(205);
+    cout << char(188) << endl;
+    cout << "    A   B   C   D  " << endl;
 }
 
 // zamiana dwoch zmiennych (pol planszy, zeby wykonac ruch)
@@ -129,7 +147,7 @@ bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g)
         return false;
 }
 
-// wykonanie ruchu bialych (niebedacego biciem) i sprawdzenie czy ktos wygral
+// wykonanie ruchu bialych (niebedacego biciem) i sprawdzenie czy czarny wygral
 void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
 {
     char mozliwe[PLANSZA_SIZE * 4][5];
@@ -226,16 +244,16 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
     }
 
     
-    /* wykonanie ruchu bialych przez komputer proretytezujac najlepsze ruchy wedlug kryteriow
+    /* wykonanie ruchu bialych przez komputer prioretytezujac najlepsze ruchy wedlug kryteriow
       -czy ruch uniemozliwia strate pionka
       -czy ruch nie podstawia pionka
-      -czy ruch przygotowywuje bicie w nastepnej turz
+      -czy ruch przygotowywuje bicie w nastepnej turze
     */
     
     // gdy jest mozliwy ruch wychodzacy spod bicia, nie podchodzacy pod bicie i przygotowywujacy bicie w nastepnej turze
     for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
     {
-        if (czy_wykonany_ruch == true)
+        if (czy_wykonany_ruch == true || mozliwe[0][0] == '-')
             break;
         else if (mozliwe[k][0] != '-')
         {
@@ -253,10 +271,10 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
         }
     }
 
-    // gdy jest mozliwy ruch wychodzacy spod bicia, nie podchodzacy pod bicie, ale tez nie przygotowywujacy bicie bialego
+    // gdy jest mozliwy ruch wychodzacy spod bicia, nie podchodzacy pod bicie, ale tez nie przygotowywujacy bicia w nastepnej turze
     for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
     {
-        if (czy_wykonany_ruch == true)
+        if (czy_wykonany_ruch == true || mozliwe[0][0] == '-')
             break;
         else if (mozliwe[k][0] != '-')
         {
@@ -274,10 +292,10 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
         }
     }
 
-    // gdy jest mozliwy ruch nie wychodzacy spod bicia, nie podchodzacy pod bicie i przygotowywujacy bicie bialego
+    // gdy jest mozliwy ruch nie wychodzacy spod bicia, nie podchodzacy pod bicie i przygotowywujacy bicie w nastepnej turze
     for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
     {
-        if (czy_wykonany_ruch == true)
+        if (czy_wykonany_ruch == true || mozliwe[0][0] == '-')
             break;
         else if (mozliwe[k][0] != '-')
         {
@@ -295,11 +313,11 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
         }
     }
 
-    // gdy jest mozliwy ruch nie wychodzacy spod bicia, nie podchodzacy pod bicie, ale tez nie przygotowywujacy bicie bialego
+    // gdy jest mozliwy ruch nie wychodzacy spod bicia, nie podchodzacy pod bicie, ale tez nie przygotowywujacy bicia w nastepnej turze
     srand(time(NULL));
     for (int k = rand() % (PLANSZA_SIZE * 4); k < PLANSZA_SIZE * 4; k = rand() % (PLANSZA_SIZE * 4))
     {
-        if (czy_wykonany_ruch == true)
+        if (czy_wykonany_ruch == true || mozliwe[0][0] == '-')
             break;
         else if (mozliwe[k][0] != '-')
         {
@@ -318,9 +336,9 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
     }
 
     // jezeli zadna inna opcja nie jest mozliwa losowy ruch
-    for (int k = 0; k < PLANSZA_SIZE * 4; ++k)
+    for (int k = rand() % (PLANSZA_SIZE * 4); k < PLANSZA_SIZE * 4; k = rand() % (PLANSZA_SIZE * 4))
     {
-        if (czy_wykonany_ruch == true)
+        if (czy_wykonany_ruch == true || mozliwe[0][0] == '-')
             break;
         else if (mozliwe[k][0] != '-')
         {
@@ -356,7 +374,7 @@ int main()
     bool czy_koniec = false;
     char ruch[9];
     cout << "Podaj swoje imie: ";
-    cin >> _imie_gracza;
+    cin >> IMIE_GRACZA;
     wypisz();
 
     while (true)

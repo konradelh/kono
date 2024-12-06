@@ -16,6 +16,11 @@ char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
                                              {'b','b','b','b'}
                                            };
 
+// deklaracja tabeli ze wszystkimi zagranymi ruchami
+char ruchy[100][8]; 
+
+int KTORY_RUCH = 0; 
+
 // deklaracja zmiennych potrzebnych do zrobienia zegara
 time_t czas1, czas2, dlugosc_gry, laczny_czas = 0;
 
@@ -64,15 +69,42 @@ void swap(char &a, char &b)
     b = temp;
 }
 
+// zapisanie ruchu do tablicy trzymajacej wszystkie zagrane ruchy w grze
+void zapisanie_do_ruchy(char(&ruch)[9])
+{
+    for (int i = 0; i < 9; ++i)
+    {
+        if (ruch[i] == '\0')
+            break;
+        if (KTORY_RUCH < 100)
+        {
+            ruchy[KTORY_RUCH][i] = ruch[i];
+            KTORY_RUCH += 1;
+        }
+    }
+}
+
 // silnik wykonuje bicie, jezeli to mozliwe 
 void bicie_biale(bool &a)
 {
+    char ruch_do_zapisu[9] = {'*','*','*','*','*','*','*','*','*'};
+
     for (int i = 0; i < PLANSZA_SIZE; ++i)
     {
         if (plansza[i][0] == 'b' && plansza[i][1] == 'b' && plansza[i][2] == ' ' && plansza[i][3] == 'c')
         {
             plansza[i][0] = ' ';
             plansza[i][3] = 'b';
+
+            ruch_do_zapisu[0] = '4';
+            ruch_do_zapisu[1] = char(i + 65);
+            ruch_do_zapisu[2] = '-';
+            ruch_do_zapisu[3] = '2';
+            ruch_do_zapisu[4] = char(i + 65);
+            ruch_do_zapisu[5] = ':';
+            ruch_do_zapisu[6] = '1';
+            ruch_do_zapisu[7] = char(i + 65);
+
             a = true;
             wypisz();
         }
@@ -80,6 +112,15 @@ void bicie_biale(bool &a)
         {
             plansza[i][3] = ' ';
             plansza[i][0] = 'b';
+
+            ruch_do_zapisu[0] = '1';
+            ruch_do_zapisu[1] = char(i + 65);
+            ruch_do_zapisu[2] = '-';
+            ruch_do_zapisu[3] = '2';
+            ruch_do_zapisu[4] = char(i + 65);
+            ruch_do_zapisu[5] = ':';
+            ruch_do_zapisu[6] = '4';
+            ruch_do_zapisu[7] = char(i + 65);
             a = true;
             wypisz();
         }
@@ -91,6 +132,16 @@ void bicie_biale(bool &a)
         {
             plansza[0][j] = ' ';
             plansza[3][j] = 'b';
+
+            ruch_do_zapisu[0] = char(j + 65);
+            ruch_do_zapisu[1] = '4';
+            ruch_do_zapisu[2] = '-';
+            ruch_do_zapisu[3] = char(j + 65);
+            ruch_do_zapisu[4] = '2';
+            ruch_do_zapisu[5] = ':';
+            ruch_do_zapisu[6] = char(j + 65);
+            ruch_do_zapisu[7] = '1';
+
             a = true;
             wypisz();
         }
@@ -98,10 +149,21 @@ void bicie_biale(bool &a)
         {
             plansza[3][j] = ' ';
             plansza[0][j] = 'b';
+
+            ruch_do_zapisu[0] = char(j + 65);
+            ruch_do_zapisu[1] = '1';
+            ruch_do_zapisu[2] = '-';
+            ruch_do_zapisu[3] = char(j + 65);
+            ruch_do_zapisu[4] = '3';
+            ruch_do_zapisu[5] = ':';
+            ruch_do_zapisu[6] = char(j + 65);
+            ruch_do_zapisu[7] = '4';
+
             a = true;
             wypisz();
         }
     }
+    zapisanie_do_ruchy(ruch_do_zapisu);
 }
 
 /* sprawdzenie, czy ruch (niebedacy biciem) jest poprawny
@@ -384,6 +446,15 @@ int main()
     cin >> dlugosc_gry;
     wypisz();
 
+    // wypelnienie ruchy[][] myslnikami
+    for (int i = 0; i < 100; ++i) 
+    {
+        for (int j = 0; j < 8; ++j)
+        {
+            ruchy[i][j] = '*';
+        }
+    }
+
     while (true)
     {
         czas1 = time(NULL); //pomiar czasu przed ruchem gracza
@@ -410,6 +481,7 @@ int main()
                 plansza[a][b] = ' ';
                 plansza[e][f] = 'c';
                 wypisz();
+                zapisanie_do_ruchy(ruch);
             }
             else
             {
@@ -424,6 +496,7 @@ int main()
             {
                 swap(plansza[a][b], plansza[c][d]);
                 wypisz();
+                zapisanie_do_ruchy(ruch);
             }
             else
             {
@@ -468,6 +541,16 @@ int main()
         {
             cout << "WYGRALES!!!" << endl;
             break;
+        }
+    }
+    for (int i = 0; i < 100; ++i)
+    {
+        if (ruchy[i][0] != '*')
+            cout << endl;
+        for (int j = 0; j < 8; ++j)
+        {
+            if (ruchy[i][j] != '*')
+                cout << ruchy[i][j];
         }
     }
     return 0;

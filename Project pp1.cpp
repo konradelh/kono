@@ -6,6 +6,7 @@
 using namespace std;
 
 const int PLANSZA_SIZE = 4;
+
 char IMIE_GRACZA[15] = {};
 // wypelnienie planszy poczatkowa pozycja
 char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
@@ -14,6 +15,9 @@ char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
                                              {' ',' ',' ',' '},
                                              {'b','b','b','b'}
                                            };
+
+// deklaracja zmiennych potrzebnych do zrobienia zegara
+time_t czas1, czas2, dlugosc_gry, laczny_czas = 0;
 
 // wypisanie pol planszy i jej obramowki
 void wypisz()
@@ -48,6 +52,7 @@ void wypisz()
         cout << char(202) << char(205) << char(205) << char(205);
     cout << char(188) << endl;
     cout << "    A   B   C   D  " << endl;
+    cout << "Czas: " << dlugosc_gry - laczny_czas << 's' << endl;
 }
 
 // zamiana dwoch zmiennych (pol planszy, zeby wykonac ruch)
@@ -99,7 +104,7 @@ void bicie_biale(bool &a)
     }
 }
 
-/* sprawdzenie, czy ruch(niebedacy biciem) jest poprawny
+/* sprawdzenie, czy ruch (niebedacy biciem) jest poprawny
 a, b, c, d to wspolrzedne pol podanych przez gracza
 e tylko do sprawdzenia, czy gracz napisal myslnik miedzy pierwszymi dwoma polami */
 bool czy_mozliwe(int a, int b, char e, int c, int d)
@@ -375,11 +380,19 @@ int main()
     char ruch[9];
     cout << "Podaj swoje imie: ";
     cin >> IMIE_GRACZA;
+    cout << "Podaj dlugosc gry (w sekundach): ";
+    cin >> dlugosc_gry;
     wypisz();
 
     while (true)
     {
+        czas1 = time(NULL); //pomiar czasu przed ruchem gracza
+
         cin >> ruch;
+
+        czas2 = time(NULL); //pomiar czasu po ruchu gracza
+
+        laczny_czas += difftime(czas2, czas1); //czas zuzyty przez gracza od poczatku gry
 
         // zamiana charow podanych przez gracza na wspolrzedne pol
         int a = PLANSZA_SIZE - (ruch[1] - '0');
@@ -389,6 +402,7 @@ int main()
         int e = PLANSZA_SIZE - (ruch[7] - '0');
         int f = int(ruch[6]) - 65;
 
+        // wykonanie ruchu wpisanego przez gracza, jezeli jest mozliwy
         if (czy_bicie(ruch[5]))
         {
             if (czy_mozliwe_bicie(a, b, ruch[2], c, d, e, f))
@@ -403,7 +417,7 @@ int main()
                 cout << "bledny ruch" << endl;
                 continue;
             }
-        }
+        } 
         else
         {
             if (czy_mozliwe(a, b, ruch[2], c, d))
@@ -419,7 +433,7 @@ int main()
             }
         }
 
-        // silnik
+        // RUCH KOMPUTERA
         bool czy_wykonany_ruch = false;
 
         bicie_biale(czy_wykonany_ruch);
@@ -436,14 +450,14 @@ int main()
                 if (plansza[i][j] == 'c')
                     ++ile_bialych;
                 if (plansza[i][j] == 'c' && 
-                    (plansza[i + 1][j] != ' ' || i + 1 >= PLANSZA_SIZE) &&
-                    (plansza[i - 1][j] != ' ' || i - 1 < 0) && 
-                    (plansza[i][j + 1] != ' ' || j + 1 >= PLANSZA_SIZE) && 
-                    (plansza[i][j - 1] != ' ' || j - 1 < 0))
+                    (i + 1 >= PLANSZA_SIZE || plansza[i + 1][j] != ' ') &&
+                    (i - 1 < 0 || plansza[i - 1][j] != ' ') &&
+                    (j + 1 >= PLANSZA_SIZE || plansza[i][j + 1] != ' ') &&
+                    (j - 1 < 0 || plansza[i][j - 1] != ' '))
                     ++ile_bialych_nie_moze_sie_ruszyc;
             }
         }
-        if (ile_bialych_nie_moze_sie_ruszyc == ile_bialych || ile_bialych == 0)
+        if (ile_bialych_nie_moze_sie_ruszyc == ile_bialych || ile_bialych == 0 || laczny_czas >= dlugosc_gry)
         {
             cout << "Przegrales :(" << endl;
             break;

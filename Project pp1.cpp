@@ -1,4 +1,5 @@
-﻿#include <iostream>
+﻿// Konrad El-Hagin 203652 ACiR Gra a la Kono
+#include <iostream>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
@@ -79,9 +80,9 @@ void zapisanie_do_ruchy(char(&ruch)[9])
         if (KTORY_RUCH < 100)
         {
             ruchy[KTORY_RUCH][i] = ruch[i];
-            KTORY_RUCH += 1;
         }
     }
+    KTORY_RUCH += 1;
 }
 
 // silnik wykonuje bicie, jezeli to mozliwe 
@@ -96,14 +97,14 @@ void bicie_biale(bool &a)
             plansza[i][0] = ' ';
             plansza[i][3] = 'b';
 
-            ruch_do_zapisu[0] = '4';
-            ruch_do_zapisu[1] = char(i + 65);
+            ruch_do_zapisu[0] = 'A';
+            ruch_do_zapisu[1] = (PLANSZA_SIZE - i) + '0';
             ruch_do_zapisu[2] = '-';
-            ruch_do_zapisu[3] = '2';
-            ruch_do_zapisu[4] = char(i + 65);
+            ruch_do_zapisu[3] = 'C';
+            ruch_do_zapisu[4] = (PLANSZA_SIZE - i) + '0';
             ruch_do_zapisu[5] = ':';
-            ruch_do_zapisu[6] = '1';
-            ruch_do_zapisu[7] = char(i + 65);
+            ruch_do_zapisu[6] = 'D';
+            ruch_do_zapisu[7] = (PLANSZA_SIZE - i) + '0';
 
             a = true;
             wypisz();
@@ -113,14 +114,14 @@ void bicie_biale(bool &a)
             plansza[i][3] = ' ';
             plansza[i][0] = 'b';
 
-            ruch_do_zapisu[0] = '1';
-            ruch_do_zapisu[1] = char(i + 65);
+            ruch_do_zapisu[0] = 'D';
+            ruch_do_zapisu[1] = (PLANSZA_SIZE - i) + '0';
             ruch_do_zapisu[2] = '-';
-            ruch_do_zapisu[3] = '2';
-            ruch_do_zapisu[4] = char(i + 65);
+            ruch_do_zapisu[3] = 'B';
+            ruch_do_zapisu[4] = (PLANSZA_SIZE - i) + '0';
             ruch_do_zapisu[5] = ':';
-            ruch_do_zapisu[6] = '4';
-            ruch_do_zapisu[7] = char(i + 65);
+            ruch_do_zapisu[6] = 'A';
+            ruch_do_zapisu[7] = (PLANSZA_SIZE - i) + '0';
             a = true;
             wypisz();
         }
@@ -218,6 +219,7 @@ bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g)
 void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
 {
     char mozliwe[PLANSZA_SIZE * 4][5];
+    char do_zapisu[9] = {'*','*','*','*','*','*','*','*','*'};
     bool gdzie_bija_czarne[PLANSZA_SIZE][PLANSZA_SIZE] = {}; //tabela z polami, ktore moga zbic czarne
     bool gdzie_mozliwe_bicia[PLANSZA_SIZE][PLANSZA_SIZE] = {}; //tabela z polami, na ktore trzeba pojsc, aby przygotowac bicie
 
@@ -331,6 +333,11 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
 
             if (gdzie_bija_czarne[a][b] == 1 && gdzie_bija_czarne[c][d] != 1 && gdzie_mozliwe_bicia[c][d] == 1)
             {
+                for (int i = 0; i < 5; ++i)
+                {
+                    do_zapisu[i] = mozliwe[k][i];
+                }
+                zapisanie_do_ruchy(do_zapisu);
                 swap(plansza[a][b], plansza[c][d]);
                 czy_wykonany_ruch = true;
                 wypisz();
@@ -352,6 +359,11 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
 
             if (gdzie_bija_czarne[a][b] == 1 && gdzie_bija_czarne[c][d] != 1)
             {
+                for (int i = 0; i < 5; ++i)
+                {
+                    do_zapisu[i] = mozliwe[k][i];
+                }
+                zapisanie_do_ruchy(do_zapisu);
                 swap(plansza[a][b], plansza[c][d]);
                 czy_wykonany_ruch = true;
                 wypisz();
@@ -373,6 +385,11 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
 
             if (gdzie_bija_czarne[a][b] != 1 && gdzie_bija_czarne[c][d] != 1 && gdzie_mozliwe_bicia[c][d] == 1)
             {
+                for (int i = 0; i < 5; ++i)
+                {
+                    do_zapisu[i] = mozliwe[k][i];
+                }
+                zapisanie_do_ruchy(do_zapisu);
                 swap(plansza[a][b], plansza[c][d]);
                 czy_wykonany_ruch = true;
                 wypisz();
@@ -395,6 +412,11 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
 
             if (gdzie_bija_czarne[a][b] != 1 && gdzie_bija_czarne[c][d] != 1)
             {
+                for (int i = 0; i < 5; ++i)
+                {
+                    do_zapisu[i] = mozliwe[k][i];
+                }
+                zapisanie_do_ruchy(do_zapisu);
                 swap(plansza[a][b], plansza[c][d]);
                 czy_wykonany_ruch = true;
                 wypisz();
@@ -413,6 +435,12 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
             int b = int(mozliwe[k][0]) - 65;
             int c = PLANSZA_SIZE - (mozliwe[k][4] - '0');
             int d = int(mozliwe[k][3]) - 65;
+
+            for (int i = 0; i < 5; ++i)
+            {
+                do_zapisu[i] = mozliwe[k][i];
+            }
+            zapisanie_do_ruchy(do_zapisu);
             swap(plansza[a][b], plansza[c][d]);
             czy_wykonany_ruch = true;
             wypisz();
@@ -446,7 +474,7 @@ int main()
     cin >> dlugosc_gry;
     wypisz();
 
-    // wypelnienie ruchy[][] myslnikami
+    // wypelnienie ruchy[][] gwiazdkami
     for (int i = 0; i < 100; ++i) 
     {
         for (int j = 0; j < 8; ++j)
@@ -545,8 +573,8 @@ int main()
     }
     for (int i = 0; i < 100; ++i)
     {
-        if (ruchy[i][0] != '*')
-            cout << endl;
+        
+        cout << endl << i << ": ";
         for (int j = 0; j < 8; ++j)
         {
             if (ruchy[i][j] != '*')

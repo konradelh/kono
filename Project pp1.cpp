@@ -571,10 +571,12 @@ int main()
             break;
         }
     }
+
+    // wypisanie zagranych ruchow
     for (int i = 0; i < 100; ++i)
     {
-        
-        cout << endl << i << ": ";
+        if (ruchy[i][0] != '*')
+            cout << endl;
         for (int j = 0; j < 8; ++j)
         {
             if (ruchy[i][j] != '*')

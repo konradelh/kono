@@ -18,7 +18,7 @@ char plansza[PLANSZA_SIZE][PLANSZA_SIZE] = {
                                            };
 
 // deklaracja tabeli ze wszystkimi zagranymi ruchami
-char ruchy[100][8]; 
+char ruchy[100][9]; 
 
 int KTORY_RUCH = 0; 
 
@@ -71,15 +71,15 @@ void swap(char &a, char &b)
 }
 
 // zapisanie ruchu do tablicy trzymajacej wszystkie zagrane ruchy w grze
-void zapisanie_do_ruchy(char(&ruch)[9])
+void zapisanie_do_ruchy(char(&zapis)[9])
 {
     for (int i = 0; i < 9; ++i)
     {
-        if (ruch[i] == '\0')
+        if (zapis[i] == '\0')
             break;
         if (KTORY_RUCH < 100)
         {
-            ruchy[KTORY_RUCH][i] = ruch[i];
+            ruchy[KTORY_RUCH][i] = zapis[i];
         }
     }
     KTORY_RUCH += 1;
@@ -88,7 +88,7 @@ void zapisanie_do_ruchy(char(&ruch)[9])
 // silnik wykonuje bicie, jezeli to mozliwe 
 void bicie_biale(bool &a)
 {
-    char ruch_do_zapisu[9] = {'*','*','*','*','*','*','*','*','*'};
+    char ruch_do_zapisu[9] = {'*','*','*','*','*','*','*','*'};
 
     for (int i = 0; i < PLANSZA_SIZE; ++i)
     {
@@ -105,7 +105,7 @@ void bicie_biale(bool &a)
             ruch_do_zapisu[5] = ':';
             ruch_do_zapisu[6] = 'D';
             ruch_do_zapisu[7] = (PLANSZA_SIZE - i) + '0';
-
+            zapisanie_do_ruchy(ruch_do_zapisu);
             a = true;
             wypisz();
         }
@@ -122,6 +122,7 @@ void bicie_biale(bool &a)
             ruch_do_zapisu[5] = ':';
             ruch_do_zapisu[6] = 'A';
             ruch_do_zapisu[7] = (PLANSZA_SIZE - i) + '0';
+            zapisanie_do_ruchy(ruch_do_zapisu);
             a = true;
             wypisz();
         }
@@ -142,7 +143,7 @@ void bicie_biale(bool &a)
             ruch_do_zapisu[5] = ':';
             ruch_do_zapisu[6] = char(j + 65);
             ruch_do_zapisu[7] = '1';
-
+            zapisanie_do_ruchy(ruch_do_zapisu);
             a = true;
             wypisz();
         }
@@ -159,12 +160,11 @@ void bicie_biale(bool &a)
             ruch_do_zapisu[5] = ':';
             ruch_do_zapisu[6] = char(j + 65);
             ruch_do_zapisu[7] = '4';
-
+            zapisanie_do_ruchy(ruch_do_zapisu);
             a = true;
             wypisz();
         }
     }
-    zapisanie_do_ruchy(ruch_do_zapisu);
 }
 
 /* sprawdzenie, czy ruch (niebedacy biciem) jest poprawny
@@ -219,7 +219,7 @@ bool czy_mozliwe_bicie(int a, int b, char e, int c, int d, int f, int g)
 void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
 {
     char mozliwe[PLANSZA_SIZE * 4][5];
-    char do_zapisu[9] = {'*','*','*','*','*','*','*','*','*'};
+    char do_zapisu[9] = {'*','*','*','*','*','*','*','*'};
     bool gdzie_bija_czarne[PLANSZA_SIZE][PLANSZA_SIZE] = {}; //tabela z polami, ktore moga zbic czarne
     bool gdzie_mozliwe_bicia[PLANSZA_SIZE][PLANSZA_SIZE] = {}; //tabela z polami, na ktore trzeba pojsc, aby przygotowac bicie
 
@@ -464,6 +464,35 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
         czy_koniec = true;
 }
 
+/*
+void undo()
+{
+    int a = PLANSZA_SIZE - (ruchy[KTORY_RUCH][1] - '0');
+    int b = int(ruchy[KTORY_RUCH][0]) - 65;
+    int c = PLANSZA_SIZE - (ruchy[KTORY_RUCH][4] - '0');
+    int d = int(ruchy[KTORY_RUCH][3]) - 65;
+    int e = PLANSZA_SIZE - (ruchy[KTORY_RUCH][7] - '0');
+    int f = int(ruchy[KTORY_RUCH][6]) - 65;
+    
+    if (ruchy[KTORY_RUCH][5] != ':')
+        swap(plansza[c][d], plansza[a][b]);
+    else
+    {
+        if (plansza[abs((a + c) / 2)][abs((b + d) / 2)] == 'b')
+        {
+            plansza[a][b] = 'b';
+            plansza[e][f] = 'c';
+        }
+        if (plansza[abs((a + c) / 2)][abs((b + d) / 2)] == 'c')
+        {
+            plansza[a][b] = 'c';
+            plansza[e][f] = 'b';
+        }
+    }
+    KTORY_RUCH -= 1;
+}
+*/
+
 int main()
 {
     bool czy_koniec = false;
@@ -493,90 +522,101 @@ int main()
 
         laczny_czas += difftime(czas2, czas1); //czas zuzyty przez gracza od poczatku gry
 
-        // zamiana charow podanych przez gracza na wspolrzedne pol
-        int a = PLANSZA_SIZE - (ruch[1] - '0');
-        int b = int(ruch[0]) - 65;
-        int c = PLANSZA_SIZE - (ruch[4] - '0');
-        int d = int(ruch[3]) - 65;
-        int e = PLANSZA_SIZE - (ruch[7] - '0');
-        int f = int(ruch[6]) - 65;
+        /*
+        if (ruch[0] != 'u' && ruch[1] != 'n' && ruch[2] != 'd' && ruch[3] != 'o')
+        {*/
+            // zamiana charow podanych przez gracza na wspolrzedne pol
+            int a = PLANSZA_SIZE - (ruch[1] - '0');
+            int b = int(ruch[0]) - 65;
+            int c = PLANSZA_SIZE - (ruch[4] - '0');
+            int d = int(ruch[3]) - 65;
+            int e = PLANSZA_SIZE - (ruch[7] - '0');
+            int f = int(ruch[6]) - 65;
 
-        // wykonanie ruchu wpisanego przez gracza, jezeli jest mozliwy
-        if (czy_bicie(ruch[5]))
-        {
-            if (czy_mozliwe_bicie(a, b, ruch[2], c, d, e, f))
+            // wykonanie ruchu wpisanego przez gracza, jezeli jest mozliwy
+            if (czy_bicie(ruch[5]))
             {
-                plansza[a][b] = ' ';
-                plansza[e][f] = 'c';
-                wypisz();
-                zapisanie_do_ruchy(ruch);
+                if (czy_mozliwe_bicie(a, b, ruch[2], c, d, e, f))
+                {
+                    plansza[a][b] = ' ';
+                    plansza[e][f] = 'c';
+                    wypisz();
+                    zapisanie_do_ruchy(ruch);
+                }
+                else
+                {
+                    wypisz();
+                    cout << "bledny ruch" << endl;
+                    continue;
+                }
             }
             else
             {
-                wypisz();
-                cout << "bledny ruch" << endl;
-                continue;
+                if (czy_mozliwe(a, b, ruch[2], c, d))
+                {
+                    swap(plansza[a][b], plansza[c][d]);
+                    wypisz();
+                    zapisanie_do_ruchy(ruch);
+                }
+                else
+                {
+                    wypisz();
+                    cout << "bledny ruch" << endl;
+                    continue;
+                }
             }
-        } 
+
+            // RUCH KOMPUTERA
+            bool czy_wykonany_ruch = false;
+
+            bicie_biale(czy_wykonany_ruch);
+
+            ruch_bialych(czy_wykonany_ruch, czy_koniec);
+
+            //warunek przegranej
+            int ile_bialych = 0;
+            int ile_bialych_nie_moze_sie_ruszyc = 0;
+            for (int i = 0; i < PLANSZA_SIZE; ++i)
+            {
+                for (int j = 0; j < PLANSZA_SIZE; ++j)
+                {
+                    if (plansza[i][j] == 'c')
+                        ++ile_bialych;
+                    if (plansza[i][j] == 'c' &&
+                        (i + 1 >= PLANSZA_SIZE || plansza[i + 1][j] != ' ') &&
+                        (i - 1 < 0 || plansza[i - 1][j] != ' ') &&
+                        (j + 1 >= PLANSZA_SIZE || plansza[i][j + 1] != ' ') &&
+                        (j - 1 < 0 || plansza[i][j - 1] != ' '))
+                        ++ile_bialych_nie_moze_sie_ruszyc;
+                }
+            }
+            if (ile_bialych_nie_moze_sie_ruszyc == ile_bialych || ile_bialych == 0 || laczny_czas >= dlugosc_gry)
+            {
+                cout << "Przegrales :(" << endl;
+                break;
+            }
+
+            //warunek wygranej
+            if (czy_koniec == true)
+            {
+                cout << "WYGRALES!!!" << endl;
+                break;
+            }
+        /* }
         else
         {
-            if (czy_mozliwe(a, b, ruch[2], c, d))
-            {
-                swap(plansza[a][b], plansza[c][d]);
-                wypisz();
-                zapisanie_do_ruchy(ruch);
-            }
-            else
-            {
-                wypisz();
-                cout << "bledny ruch" << endl;
-                continue;
-            }
+            undo();
+            wypisz();
+            continue;
         }
-
-        // RUCH KOMPUTERA
-        bool czy_wykonany_ruch = false;
-
-        bicie_biale(czy_wykonany_ruch);
-        
-        ruch_bialych(czy_wykonany_ruch, czy_koniec);
-
-        //warunek przegranej
-        int ile_bialych = 0;
-        int ile_bialych_nie_moze_sie_ruszyc = 0;
-        for (int i = 0; i < PLANSZA_SIZE; ++i)
-        {
-            for (int j = 0; j < PLANSZA_SIZE; ++j)
-            {
-                if (plansza[i][j] == 'c')
-                    ++ile_bialych;
-                if (plansza[i][j] == 'c' && 
-                    (i + 1 >= PLANSZA_SIZE || plansza[i + 1][j] != ' ') &&
-                    (i - 1 < 0 || plansza[i - 1][j] != ' ') &&
-                    (j + 1 >= PLANSZA_SIZE || plansza[i][j + 1] != ' ') &&
-                    (j - 1 < 0 || plansza[i][j - 1] != ' '))
-                    ++ile_bialych_nie_moze_sie_ruszyc;
-            }
-        }
-        if (ile_bialych_nie_moze_sie_ruszyc == ile_bialych || ile_bialych == 0 || laczny_czas >= dlugosc_gry)
-        {
-            cout << "Przegrales :(" << endl;
-            break;
-        }
-
-        //warunek wygranej
-        if (czy_koniec == true)
-        {
-            cout << "WYGRALES!!!" << endl;
-            break;
-        }
+        */
     }
 
     // wypisanie zagranych ruchow
     for (int i = 0; i < 100; ++i)
     {
         if (ruchy[i][0] != '*')
-            cout << endl;
+            cout << endl << i + 1 << ": ";
         for (int j = 0; j < 8; ++j)
         {
             if (ruchy[i][j] != '*')

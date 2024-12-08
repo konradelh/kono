@@ -464,7 +464,8 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
         czy_koniec = true;
 }
 
-void undo(int ile_razy)
+//funkcja do cofania ruchow
+void undo(int ile_razy, bool czy_usunac)
 {
     for (int i = 0; i < ile_razy; ++i)
     {
@@ -490,9 +491,57 @@ void undo(int ile_razy)
                 plansza[e][f] = 'b';
             }
         }
-        for (int i = 0; i < 8; ++i)
-            ruchy[KTORY_RUCH - 1][i] = '*';
+        if (czy_usunac == true)
+        {
+            for (int i = 0; i < 8; ++i)
+                ruchy[KTORY_RUCH - 1][i] = '*';
+        }
         KTORY_RUCH -= 1;
+    }
+}
+
+//przeciwienstwo undo
+void do_przodu(int ile_razy)
+{
+    for (int i = 0; i < ile_razy; ++i)
+    {
+        int a = PLANSZA_SIZE - (ruchy[KTORY_RUCH][1] - '0');
+        int b = int(ruchy[KTORY_RUCH][0]) - 65;
+        int c = PLANSZA_SIZE - (ruchy[KTORY_RUCH][4] - '0');
+        int d = int(ruchy[KTORY_RUCH][3]) - 65;
+        int e = PLANSZA_SIZE - (ruchy[KTORY_RUCH][7] - '0');
+        int f = int(ruchy[KTORY_RUCH][6]) - 65;
+
+        if (ruchy[KTORY_RUCH][5] != ':')
+            swap(plansza[a][b], plansza[c][d]);
+        else
+        {
+            if (plansza[abs((a + c) / 2)][abs((b + d) / 2)] == 'b')
+            {
+                plansza[a][b] = ' ';
+                plansza[e][f] = 'b';
+            }
+            if (plansza[abs((a + c) / 2)][abs((b + d) / 2)] == 'c')
+            {
+                plansza[a][b] = ' ';
+                plansza[e][f] = 'c';
+            }
+        }
+        KTORY_RUCH += 1;
+    }
+}
+
+void wypisz_ruchy()
+{
+    for (int i = 0; i < 100; ++i)
+    {
+        if (ruchy[i][0] != '*')
+            cout << endl << i + 1 << ": ";
+        for (int j = 0; j < 8; ++j)
+        {
+            if (ruchy[i][j] != '*')
+                cout << ruchy[i][j];
+        }
     }
 }
 
@@ -500,7 +549,9 @@ int main()
 {
     bool czy_koniec = false;
     char ruch[9];
-    cout << "Podaj swoje imie: ";
+    cout << "INSTRUKCJA" << endl;
+    cout << "Gracze na zmiane wykonuja kolejne ruchy. W jednym ruchu dowolnie wybrany pion moze przejsc na sasiednie pole wolne poziomo lub pionowo w dowolna strone. Bicie pionow przeciwnika odbywa sie po linii prostej, poprzez przeskoczenie pionem bijacym przez sasiadujacy wlasny pion na wolne pole przed nim a nastepnie przesuniecie pionka skaczacego (bijacego) na pierwsze pole zajete przez wrogi pion w linii skoku. Pion ten zostaje wowczas zabity i zdjety z planszy. Ruchy podawaj WIELKIMI literami i pisz myslniki i dwukropki w odpowiednich miejscach. Gra konczy sie, gdy ktorys z graczy nie ma zadnych pionkow, wszystkie jego pionki sa otoczone lub skonczyl mu sie czas." << endl;
+    cout << endl << "Podaj swoje imie: ";
     cin >> IMIE_GRACZA;
     cout << "Podaj dlugosc gry (w sekundach): ";
     cin >> dlugosc_gry;
@@ -519,6 +570,7 @@ int main()
     {
         czas1 = time(NULL); //pomiar czasu przed ruchem gracza
 
+        cout << "Podaj ruch (jezeli chcesz cofnac ruch wpisz 'undo': ";
         cin >> ruch;
 
         czas2 = time(NULL); //pomiar czasu po ruchu gracza
@@ -608,22 +660,26 @@ int main()
         }
         else
         {
-            undo(2);
+            undo(2, true);
             wypisz();
         }
         
     }
+    wypisz_ruchy();
 
-    // wypisanie zagranych ruchow
-    for (int i = 0; i < 100; ++i)
+    while (true)
     {
-        if (ruchy[i][0] != '*')
-            cout << endl << i + 1 << ": ";
-        for (int j = 0; j < 8; ++j)
-        {
-            if (ruchy[i][j] != '*')
-                cout << ruchy[i][j];
-        }
+        int pozycja;
+        cout << endl << "Podaj pozycje, do ktorej chcesz sie przeniesc, jezeli chcesz skonczyc napisz '-1': ";
+        cin >> pozycja;
+        if (pozycja == -1)
+            break;
+        if (pozycja < KTORY_RUCH)
+            undo(KTORY_RUCH - pozycja, false);
+        if (pozycja > KTORY_RUCH)
+            do_przodu(pozycja - KTORY_RUCH);
+        wypisz();
+        wypisz_ruchy();
     }
     return 0;
 }

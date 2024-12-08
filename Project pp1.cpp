@@ -464,34 +464,37 @@ void ruch_bialych(bool &czy_wykonany_ruch, bool &czy_koniec)
         czy_koniec = true;
 }
 
-/*
-void undo()
+void undo(int ile_razy)
 {
-    int a = PLANSZA_SIZE - (ruchy[KTORY_RUCH][1] - '0');
-    int b = int(ruchy[KTORY_RUCH][0]) - 65;
-    int c = PLANSZA_SIZE - (ruchy[KTORY_RUCH][4] - '0');
-    int d = int(ruchy[KTORY_RUCH][3]) - 65;
-    int e = PLANSZA_SIZE - (ruchy[KTORY_RUCH][7] - '0');
-    int f = int(ruchy[KTORY_RUCH][6]) - 65;
-    
-    if (ruchy[KTORY_RUCH][5] != ':')
-        swap(plansza[c][d], plansza[a][b]);
-    else
+    for (int i = 0; i < ile_razy; ++i)
     {
-        if (plansza[abs((a + c) / 2)][abs((b + d) / 2)] == 'b')
+        int a = PLANSZA_SIZE - (ruchy[KTORY_RUCH - 1][1] - '0');
+        int b = int(ruchy[KTORY_RUCH - 1][0]) - 65;
+        int c = PLANSZA_SIZE - (ruchy[KTORY_RUCH - 1][4] - '0');
+        int d = int(ruchy[KTORY_RUCH - 1][3]) - 65;
+        int e = PLANSZA_SIZE - (ruchy[KTORY_RUCH - 1][7] - '0');
+        int f = int(ruchy[KTORY_RUCH - 1][6]) - 65;
+
+        if (ruchy[KTORY_RUCH - 1][5] != ':')
+            swap(plansza[c][d], plansza[a][b]);
+        else
         {
-            plansza[a][b] = 'b';
-            plansza[e][f] = 'c';
+            if (plansza[abs((a + c) / 2)][abs((b + d) / 2)] == 'b')
+            {
+                plansza[a][b] = 'b';
+                plansza[e][f] = 'c';
+            }
+            if (plansza[abs((a + c) / 2)][abs((b + d) / 2)] == 'c')
+            {
+                plansza[a][b] = 'c';
+                plansza[e][f] = 'b';
+            }
         }
-        if (plansza[abs((a + c) / 2)][abs((b + d) / 2)] == 'c')
-        {
-            plansza[a][b] = 'c';
-            plansza[e][f] = 'b';
-        }
+        for (int i = 0; i < 8; ++i)
+            ruchy[KTORY_RUCH - 1][i] = '*';
+        KTORY_RUCH -= 1;
     }
-    KTORY_RUCH -= 1;
 }
-*/
 
 int main()
 {
@@ -522,9 +525,9 @@ int main()
 
         laczny_czas += difftime(czas2, czas1); //czas zuzyty przez gracza od poczatku gry
 
-        /*
+        
         if (ruch[0] != 'u' && ruch[1] != 'n' && ruch[2] != 'd' && ruch[3] != 'o')
-        {*/
+        {
             // zamiana charow podanych przez gracza na wspolrzedne pol
             int a = PLANSZA_SIZE - (ruch[1] - '0');
             int b = int(ruch[0]) - 65;
@@ -602,14 +605,13 @@ int main()
                 cout << "WYGRALES!!!" << endl;
                 break;
             }
-        /* }
+        }
         else
         {
-            undo();
+            undo(2);
             wypisz();
-            continue;
         }
-        */
+        
     }
 
     // wypisanie zagranych ruchow
